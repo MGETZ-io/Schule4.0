@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steps of Trust</title>
-     <link rel="icon" type="image/png" href="Favicon.jpeg">
+    <link rel="icon" type="image/png" href="Favicon.jpeg">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -73,6 +73,26 @@
             color: #ffd700;
         }
 
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background: #0575e6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #005bb5;
+        }
+
         footer {
             margin-top: 20px;
             font-size: 0.9em;
@@ -104,6 +124,14 @@
             <div class="progress-point"></div>
             <div class="progress-point"></div>
         </div>
+    </div>
+    <div class="info">
+        <p id="edeka-card"></p>
+    </div>
+    <div class="button-container">
+        <button onclick="window.location.href='https://www1.com';">IServ</button>
+        <button onclick="window.location.href='https://www1.com';">Untis</button>
+        <button onclick="window.location.href='https://www1.com';">Lernlog</button>
     </div>
     <footer>
         <p>Entwickelt für die <span>FVSS</span>. <a href="impressum">Impressum</a></p>
@@ -141,6 +169,7 @@
         const progressBar = document.getElementById("progress-bar");
         const studentInfo = document.getElementById("student-info");
         const progressText = document.getElementById("progress-text");
+        const edekaCard = document.getElementById("edeka-card");
 
         // Fortschritt überprüfen und anzeigen
         if (email && studentProgress[email] !== undefined) {
@@ -159,6 +188,9 @@
             if (stage === 5) {
                 studentInfo.innerHTML = `Schüler: <span>${email} (Admin)</span>`;
             }
+
+            // Edeka-Ausweis anzeigen
+            edekaCard.innerHTML = `Edeka-Ausweis: <span>${email}</span>`;
         } else {
             // Fehlermeldung bei fehlenden Daten
             studentInfo.textContent = "Fehler: Schülerdaten konnten nicht geladen werden.";
