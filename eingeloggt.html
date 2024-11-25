@@ -114,6 +114,7 @@
     <div class="info">
         <p id="student-info">Lade Schülerinformationen...</p>
         <p id="progress-text"></p>
+        <p id="edeka-card"></p>
     </div>
     <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
@@ -124,9 +125,6 @@
             <div class="progress-point"></div>
             <div class="progress-point"></div>
         </div>
-    </div>
-    <div class="info">
-        <p id="edeka-card"></p>
     </div>
     <div class="button-container">
         <button onclick="window.location.href='https://www1.com';">IServ</button>
@@ -144,19 +142,19 @@
             return params.get(name);
         }
 
-        // Schülerdaten mit 6 Stufen (5 = Admin)
-        const studentProgress = {
-            "Maxim.getz@fvss.de": 2,
-            "Admin@fvss.de": 5,
-            "schueler3@fvss.de": 2,
-            "schueler5@fvss.de": 1,
-            "schueler4@fvss.de": 4,
-            "Niklas.seibel@fvss.de": 1,
-            "Paul.schmidt@fvss.de": 1,
-            "Luca.sternberg@fvss.de": 2,
-            "Shawn.ohms@fvss.de": 1,
-            "Lars.roescheisen.schueler@fvss.de": 2,
-            "Lars.roescheisen.lehrer@fvss.de": 5
+        // Schülerdaten mit Fortschritt und Edeka-Ausweis (Ja/Nein)
+        const studentData = {
+            "Maxim.getz@fvss.de": { progress: 2, edekaCard: "Ja" },
+            "Admin@fvss.de": { progress: 5, edekaCard: "Ja" },
+            "schueler3@fvss.de": { progress: 2, edekaCard: "Nein" },
+            "schueler5@fvss.de": { progress: 1, edekaCard: "Ja" },
+            "schueler4@fvss.de": { progress: 4, edekaCard: "Nein" },
+            "Niklas.seibel@fvss.de": { progress: 1, edekaCard: "Ja" },
+            "Paul.schmidt@fvss.de": { progress: 1, edekaCard: "Nein" },
+            "Luca.sternberg@fvss.de": { progress: 2, edekaCard: "Ja" },
+            "Shawn.ohms@fvss.de": { progress: 1, edekaCard: "Nein" },
+            "Lars.roescheisen.schueler@fvss.de": { progress: 2, edekaCard: "Ja" },
+            "Lars.roescheisen.lehrer@fvss.de": { progress: 5, edekaCard: "Nein" }
         };
 
         // Fortschrittsstufen
@@ -171,13 +169,15 @@
         const progressText = document.getElementById("progress-text");
         const edekaCard = document.getElementById("edeka-card");
 
-        // Fortschritt überprüfen und anzeigen
-        if (email && studentProgress[email] !== undefined) {
-            const stage = studentProgress[email];
+        // Daten überprüfen und anzeigen
+        if (email && studentData[email] !== undefined) {
+            const student = studentData[email];
+            const stage = student.progress;
             const progressPercentage = (stage <= 4 ? (stage + 1) * 20 : 100);
 
             studentInfo.innerHTML = `Schüler: <span>${email}</span>`;
             progressText.textContent = `Status: ${stages[stage]}`;
+            edekaCard.textContent = `Edeka-Ausweis: ${student.edekaCard}`;
 
             // Lade die Progress-Bar mit Animation
             setTimeout(() => {
@@ -188,13 +188,11 @@
             if (stage === 5) {
                 studentInfo.innerHTML = `Schüler: <span>${email} (Admin)</span>`;
             }
-
-            // Edeka-Ausweis anzeigen
-            edekaCard.innerHTML = `Edeka-Ausweis: <span>${email}</span>`;
         } else {
             // Fehlermeldung bei fehlenden Daten
             studentInfo.textContent = "Fehler: Schülerdaten konnten nicht geladen werden.";
             progressText.textContent = "E-Mail-Adresse nicht gefunden.";
+            edekaCard.textContent = "Edeka-Ausweis: unbekannt";
         }
     </script>
 </body>
