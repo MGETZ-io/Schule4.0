@@ -26,7 +26,43 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .info, .management, .class-list {
+        .progress-container {
+            width: 80%;
+            max-width: 500px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            position: relative;
+            height: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #00f260, #0575e6);
+            width: 0%;
+            transition: width 2s ease;
+        }
+
+        .progress-points {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            top: -10px;
+        }
+
+        .progress-point {
+            width: 15px;
+            height: 15px;
+            background: #fff;
+            border-radius: 50%;
+            border: 3px solid #00f260;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .info {
             margin: 20px 0;
             font-size: 1.2em;
             line-height: 1.5;
@@ -57,32 +93,19 @@
             background: #005bb5;
         }
 
-        .hidden {
-            display: none;
+        footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        footer a {
+            color: #ffd700;
+            text-decoration: none;
         }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #005bb5;
-            color: white;
-        }
-
-        .form-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -93,52 +116,36 @@
         <p id="progress-text"></p>
         <p id="edeka-card"></p>
     </div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="progress-points">
+            <div class="progress-point"></div>
+            <div class="progress-point"></div>
+            <div class="progress-point"></div>
+            <div class="progress-point"></div>
+            <div class="progress-point"></div>
+        </div>
+    </div>
     <div class="button-container">
         <button onclick="window.location.href='https://www1.com';">IServ</button>
         <button onclick="window.location.href='https://www1.com';">Untis</button>
         <button onclick="window.location.href='https://www1.com';">Lernlog</button>
     </div>
-
-    <!-- Klassenliste -->
-    <div id="class-list" class="class-list hidden">
-        <h2>Klassenliste</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>E-Mail</th>
-                    <th>Step</th>
-                    <th>Edeka-Ausweis</th>
-                </tr>
-            </thead>
-            <tbody id="class-list-table"></tbody>
-        </table>
-    </div>
-
-    <!-- Nutzer-Management -->
-    <div id="management" class="management hidden">
-        <h2>Nutzer-Management</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>E-Mail</th>
-                    <th>Step</th>
-                    <th>Edeka-Ausweis</th>
-                    <th>Aktionen</th>
-                </tr>
-            </thead>
-            <tbody id="management-table"></tbody>
-        </table>
-    </div>
-
     <footer>
         <p>Entwickelt für die <span>FVSS</span>. <a href="impressum">Impressum</a></p>
     </footer>
 
     <script>
+        // Funktion zum Abrufen von URL-Parametern
+        function getQueryParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
         // Schülerdaten mit Fortschritt und Edeka-Ausweis (Ja/Nein)
         const studentData = {
             "Maxim.getz@fvss.de": { progress: 2, edekaCard: "Ja" },
-            "Admin@fvss.de": { progress: 6, edekaCard: "Ja" },
+            "Admin@fvss.de": { progress: 5, edekaCard: "Ja" },
             "schueler3@fvss.de": { progress: 2, edekaCard: "Nein" },
             "schueler5@fvss.de": { progress: 1, edekaCard: "Ja" },
             "schueler4@fvss.de": { progress: 4, edekaCard: "Nein" },
@@ -151,66 +158,41 @@
         };
 
         // Fortschrittsstufen
-        const stages = ["Neustarter", "Starter", "Durchstarter", "Sprinter", "Champion", "Lehrer", "Verwaltung"];
+        const stages = ["Neustarter", "Starter", "Durchstarter", "Sprinter", "Champion", "Lehrer"];
 
         // URL-Parameter abrufen
-        const urlParams = new URLSearchParams(window.location.search);
-        const email = urlParams.get("email");
+        const email = getQueryParameter("email");
 
         // Elemente abrufen
+        const progressBar = document.getElementById("progress-bar");
         const studentInfo = document.getElementById("student-info");
         const progressText = document.getElementById("progress-text");
         const edekaCard = document.getElementById("edeka-card");
-        const classList = document.getElementById("class-list");
-        const management = document.getElementById("management");
-        const classListTable = document.getElementById("class-list-table");
-        const managementTable = document.getElementById("management-table");
 
-        // Klassenliste generieren
-        function populateTable(table, editable) {
-            table.innerHTML = '';
-            for (const [email, data] of Object.entries(studentData)) {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${email}</td>
-                    <td>${editable ? `<input type="number" value="${data.progress}" min="0" max="6">` : data.progress}</td>
-                    <td>${editable ? `<select><option ${data.edekaCard === "Ja" ? "selected" : ""}>Ja</option><option ${data.edekaCard === "Nein" ? "selected" : ""}>Nein</option></select>` : data.edekaCard}</td>
-                    ${editable ? `<td><button onclick="saveChanges('${email}', this)">Speichern</button></td>` : ""}
-                `;
-                table.appendChild(row);
-            }
-        }
+        // Daten überprüfen und anzeigen
+        if (email && studentData[email] !== undefined) {
+            const student = studentData[email];
+            const stage = student.progress;
+            const progressPercentage = (stage <= 4 ? (stage + 1) * 20 : 100);
 
-        // Änderungen speichern
-        function saveChanges(email, button) {
-            const row = button.parentElement.parentElement;
-            const newStep = row.querySelector("input").value;
-            const newEdekaCard = row.querySelector("select").value;
+            studentInfo.innerHTML = `Schüler: <span>${email}</span>`;
+            progressText.textContent = `Status: ${stages[stage]}`;
+            edekaCard.textContent = `Edeka-Ausweis: ${student.edekaCard}`;
 
-            studentData[email] = { progress: Number(newStep), edekaCard: newEdekaCard };
-            alert(`Änderungen gespeichert für ${email}`);
-        }
+            // Lade die Progress-Bar mit Animation
+            setTimeout(() => {
+                progressBar.style.width = `${progressPercentage}%`;
+            }, 500);
 
-        // Daten anzeigen
-        if (email && studentData[email]) {
-            const user = studentData[email];
-            studentInfo.textContent = `Schüler: ${email}`;
-            progressText.textContent = `Status: ${stages[user.progress]}`;
-            edekaCard.textContent = `Edeka-Ausweis: ${user.edekaCard}`;
-
-            // Lehrer oder Verwaltung
-            if (user.progress >= 5) {
-                classList.classList.remove("hidden");
-                populateTable(classListTable, false);
-            }
-
-            // Verwaltung
-            if (user.progress === 6) {
-                management.classList.remove("hidden");
-                populateTable(managementTable, true);
+            // Admin-Status anzeigen
+            if (stage === 5) {
+                studentInfo.innerHTML = `Schüler: <span>${email} (Admin)</span>`;
             }
         } else {
+            // Fehlermeldung bei fehlenden Daten
             studentInfo.textContent = "Fehler: Schülerdaten konnten nicht geladen werden.";
+            progressText.textContent = "E-Mail-Adresse nicht gefunden.";
+            edekaCard.textContent = "Edeka-Ausweis: unbekannt";
         }
     </script>
 </body>
