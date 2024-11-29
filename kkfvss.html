@@ -4,26 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formular</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #008c95;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #008c95;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #006d73;
+        }
+    </style>
 </head>
 <body>
-    <h1>Formular</h1>
-    <form action="mailto:maxim.getz@steinschule.neumuenster.de" method="post" enctype="text/plain">
-        <label for="vorname">Vorname:</label><br>
-        <input type="text" id="vorname" name="vorname" required><br><br>
+    <div class="container">
+        <h1>Formular</h1>
+        <form action="mailto:maxim.getz@steinschule.neumuenster.de?subject=Anmeldung%20BETA%20Digitaler%20Step%20Ausweis" method="post" enctype="text/plain">
+            <label for="vorname">Vorname:</label>
+            <input type="text" id="vorname" name="vorname" required>
 
-        <label for="nachname">Nachname:</label><br>
-        <input type="text" id="nachname" name="nachname" required><br><br>
+            <label for="nachname">Nachname:</label>
+            <input type="text" id="nachname" name="nachname" required>
 
-        <label for="klasse">Klasse:</label><br>
-        <input type="text" id="klasse" name="klasse" required><br><br>
+            <label for="klasse">Klasse:</label>
+            <input type="text" id="klasse" name="klasse" required>
 
-        <label for="klassenlehrkraft">Klassenlehrkraft:</label><br>
-        <input type="text" id="klassenlehrkraft" name="klassenlehrkraft" required><br><br>
+            <label for="klassenlehrkraft">Klassenlehrkraft:</label>
+            <input type="text" id="klassenlehrkraft" name="klassenlehrkraft" required>
 
-        <label for="step">Step:</label><br>
-        <input type="text" id="step" name="step" required><br><br>
+            <label for="step">Step:</label>
+            <input type="text" id="step" name="step" required>
 
-        <button type="submit">Absenden</button>
-    </form>
+            <button type="submit">Absenden</button>
+        </form>
+    </div>
 </body>
 </html>
