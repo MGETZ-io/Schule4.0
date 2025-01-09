@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klassenliste</title>
+    <title>Klassenliste - Kalenderansicht</title>
     <link rel="icon" type="image/png" href="IMG_0210.PNG">
     <style>
         body {
@@ -41,6 +41,37 @@
             display: none;
             margin-top: 20px;
             font-size: 1.2em;
+        }
+
+        .attendance-calendar {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);  /* 7 Tage pro Woche */
+            gap: 10px;
+            justify-items: center;
+            text-align: center;
+        }
+
+        .attendance-day {
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .attendance-day.present {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .attendance-day.absent {
+            background-color: #f44336;
+            color: white;
         }
 
         .attendance-buttons {
@@ -126,10 +157,10 @@
             <!-- Schüler werden hier dynamisch hinzugefügt -->
         </ul>
 
-        <div id="attendance-week" style="display:none;">
-            <h3>Woche: <span id="week-number">1</span></h3>
-            <div id="attendance-buttons" class="attendance-buttons">
-                <!-- Anwesenheitsbuttons werden hier dynamisch hinzugefügt -->
+        <div id="attendance-calendar-container">
+            <h3>Kalenderansicht der Anwesenheit</h3>
+            <div id="attendance-calendar" class="attendance-calendar">
+                <!-- Kalenderansicht wird hier dynamisch hinzugefügt -->
             </div>
         </div>
     </div>
@@ -172,79 +203,72 @@
         // Anwesenheitsdaten für Schüler, initial leer
         const attendanceData = {};
 
-        // Funktion zur Erstellung der Anwesenheitsbuttons
-        function createAttendanceButtons(student) {
-            const attendanceButtonsContainer = document.getElementById('attendance-buttons');
-            attendanceButtonsContainer.innerHTML = '';  // Leeren, falls vorherige Buttons da sind
+        // Funktion zum Erstellen der Kalenderansicht
+        function createCalendar(selectedClass) {
+            const calendarContainer = document.getElementById('attendance-calendar');
+            calendarContainer.innerHTML = ''; // Clear any previous calendar
 
-            const presentButton = document.createElement('button');
-            presentButton.textContent = `Anwesend: ${student}`;
-            presentButton.onclick = function() {
-                recordAttendance(student, 'anwesend');
-            };
-            attendanceButtonsContainer.appendChild(presentButton);
+            const daysOfWeek = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            const students = classStudents[selectedClass];
+            let dayCounter = 1;
 
-            const absentButton = document.createElement('button');
-            absentButton.textContent = `Abwesend: ${student}`;
-            absentButton.onclick = function() {
-                recordAttendance(student, 'abwesend');
-            };
-            attendanceButtonsContainer.appendChild(absentButton);
-        }
+            // Add week days
+            daysOfWeek.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('attendance-day');
+                dayElement.textContent = day;
+                calendarContainer.appendChild(dayElement);
+            });
 
-        // Funktion zur Aufzeichnung der Anwesenheit
-        function recordAttendance(student, status) {
-            const classSelect = document.getElementById('class-select');
-            const selectedClass = classSelect.value;
-            const week = document.getElementById('week-number').textContent;
+            // Add student attendance for each day
+            students.forEach(student => {
+                daysOfWeek.forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('attendance-day');
+                    dayElement.textContent = student;
 
-            // Initialisiere die Datenstruktur, wenn sie noch nicht existiert
-            if (!attendanceData[selectedClass]) {
-                attendanceData[selectedClass] = {};
-            }
-
-            if (!attendanceData[selectedClass][week]) {
-                attendanceData[selectedClass][week] = {};
-            }
-
-            // Speichere den Anwesenheitsstatus des Schülers
-            attendanceData[selectedClass][week][student] = status;
-
-            alert(`Anwesenheit für Schüler ${student} in Woche ${week}: ${status}`);
-        }
-
-        // Funktion zur Anzeige der Schüler und der Anwesenheitsbuttons
-        const selectElement = document.getElementById('class-select');
-        const studentListElement = document.getElementById('student-list');
-        const studentListContainer = document.getElementById('students');
-        const weekNumberElement = document.getElementById('week-number');
-
-        selectElement.addEventListener('change', function() {
-            const selectedClass = selectElement.value;
-
-            if (selectedClass && classStudents[selectedClass]) {
-                studentListContainer.style.display = 'block';
-                studentListElement.innerHTML = '';  // Clear any previous list
-
-                classStudents[selectedClass].forEach(student => {
-                    const li = document.createElement('li');
-                    li.textContent = `Schüler ${student}`;
-                    studentListElement.appendChild(li);
-
-                    // Anwesenheitsbuttons für jeden Schüler erstellen
-                    li.addEventListener('click', function() {
-                        createAttendanceButtons(student);
+                    // Button for marking presence
+                    dayElement.addEventListener('click', function() {
+                        toggleAttendance(dayElement, student, day);
                     });
-                });
 
-                // Zeige Anwesenheitsbuttons und die Woche
-                document.getElementById('attendance-week').style.display = 'block';
+                    calendarContainer.appendChild(dayElement);
+                });
+            });
+        }
+
+        // Toggle attendance status
+        function toggleAttendance(dayElement, student, day) {
+            const currentStatus = dayElement.classList.contains('present') ? 'present' : 'absent';
+            if (currentStatus === 'present') {
+                dayElement.classList.remove('present');
+                dayElement.classList.add('absent');
+                updateAttendanceData(student, day, 'absent');
             } else {
-                studentListContainer.style.display = 'none';
-                document.getElementById('attendance-week').style.display = 'none';
+                dayElement.classList.remove('absent');
+                dayElement.classList.add('present');
+                updateAttendanceData(student, day, 'present');
+            }
+        }
+
+        // Update attendance data
+        function updateAttendanceData(student, day, status) {
+            if (!attendanceData[student]) {
+                attendanceData[student] = {};
+            }
+            attendanceData[student][day] = status;
+        }
+
+        // Event listener for class selection
+        document.getElementById('class-select').addEventListener('change', function() {
+            const selectedClass = this.value;
+            if (selectedClass && classStudents[selectedClass]) {
+                document.getElementById('students').style.display = 'block';
+                createCalendar(selectedClass);
+            } else {
+                document.getElementById('students').style.display = 'none';
             }
         });
     </script>
-
 </body>
 </html>
