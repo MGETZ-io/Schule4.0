@@ -43,6 +43,28 @@
             font-size: 1.2em;
         }
 
+        .attendance-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .attendance-buttons button {
+            padding: 5px 10px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .attendance-buttons button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
         footer {
             margin-top: 20px;
             padding: 10px;
@@ -103,6 +125,13 @@
         <ul id="student-list">
             <!-- Schüler werden hier dynamisch hinzugefügt -->
         </ul>
+
+        <div id="attendance-week" style="display:none;">
+            <h3>Woche: <span id="week-number">1</span></h3>
+            <div id="attendance-buttons" class="attendance-buttons">
+                <!-- Anwesenheitsbuttons werden hier dynamisch hinzugefügt -->
+            </div>
+        </div>
     </div>
 
     <div class="button-container">
@@ -140,9 +169,55 @@
             'Mk': ['96', '97', '98', '99', '100']
         };
 
+        // Anwesenheitsdaten für Schüler, initial leer
+        const attendanceData = {};
+
+        // Funktion zur Erstellung der Anwesenheitsbuttons
+        function createAttendanceButtons(student) {
+            const attendanceButtonsContainer = document.getElementById('attendance-buttons');
+            attendanceButtonsContainer.innerHTML = '';  // Leeren, falls vorherige Buttons da sind
+
+            const presentButton = document.createElement('button');
+            presentButton.textContent = `Anwesend: ${student}`;
+            presentButton.onclick = function() {
+                recordAttendance(student, 'anwesend');
+            };
+            attendanceButtonsContainer.appendChild(presentButton);
+
+            const absentButton = document.createElement('button');
+            absentButton.textContent = `Abwesend: ${student}`;
+            absentButton.onclick = function() {
+                recordAttendance(student, 'abwesend');
+            };
+            attendanceButtonsContainer.appendChild(absentButton);
+        }
+
+        // Funktion zur Aufzeichnung der Anwesenheit
+        function recordAttendance(student, status) {
+            const classSelect = document.getElementById('class-select');
+            const selectedClass = classSelect.value;
+            const week = document.getElementById('week-number').textContent;
+
+            // Initialisiere die Datenstruktur, wenn sie noch nicht existiert
+            if (!attendanceData[selectedClass]) {
+                attendanceData[selectedClass] = {};
+            }
+
+            if (!attendanceData[selectedClass][week]) {
+                attendanceData[selectedClass][week] = {};
+            }
+
+            // Speichere den Anwesenheitsstatus des Schülers
+            attendanceData[selectedClass][week][student] = status;
+
+            alert(`Anwesenheit für Schüler ${student} in Woche ${week}: ${status}`);
+        }
+
+        // Funktion zur Anzeige der Schüler und der Anwesenheitsbuttons
         const selectElement = document.getElementById('class-select');
         const studentListElement = document.getElementById('student-list');
         const studentListContainer = document.getElementById('students');
+        const weekNumberElement = document.getElementById('week-number');
 
         selectElement.addEventListener('change', function() {
             const selectedClass = selectElement.value;
@@ -155,9 +230,18 @@
                     const li = document.createElement('li');
                     li.textContent = `Schüler ${student}`;
                     studentListElement.appendChild(li);
+
+                    // Anwesenheitsbuttons für jeden Schüler erstellen
+                    li.addEventListener('click', function() {
+                        createAttendanceButtons(student);
+                    });
                 });
+
+                // Zeige Anwesenheitsbuttons und die Woche
+                document.getElementById('attendance-week').style.display = 'block';
             } else {
                 studentListContainer.style.display = 'none';
+                document.getElementById('attendance-week').style.display = 'none';
             }
         });
     </script>
