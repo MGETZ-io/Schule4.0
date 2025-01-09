@@ -140,11 +140,7 @@
         </div>
     </div>
     <div class="button-container">
-        <button onclick="window.location.href='https://steinschule.neumuenster.de';">IServ</button>
-        <button onclick="window.location.href='https://borys.webuntis.com/WebUntis/?school=Freiherr-vom-Stein+Neum%C3%BCnster#/basic/login';">Untis</button>
-        <button onclick="window.location.href='https://steinschule.lernlog.digital';">Lernlog</button>
-        <button onclick="window.location.href='https://sh.itslearning.com/index.aspx';">Itslearning</button>
-        <button onclick="window.location.href='kl.html';">Zur Klassenliste</button>
+        <button onclick="window.location.href='index.html';">Zurück zum Step</button>
     </div>
     <footer>
         <img src="Bild1.jpeg" alt="Logo 1">
@@ -153,45 +149,5 @@
         <p>Entwickelt für die <span>FVSS</span>. <a href="impressum">Impressum</a></p>
     </footer>
 
-    <script>
-        // Funktion zum Abrufen von URL-Parametern
-        function getQueryParameter(name) {
-            const params = new URLSearchParams(window.location.search);
-            return params.get(name);
-        }
-
-        // Schülerdaten mit Fortschritt und Edeka-Ausweis (Ja/Nein)
-        };
-
-        // Fortschrittsstufen
-        const stages = ["Neustarter", "Starter", "Durchstarter", "Sprinter", "Champion", "Lehrer"];
-
-        // URL-Parameter abrufen
-        const email = getQueryParameter("email");
-
-        // Elemente abrufen
-        
-        // Daten überprüfen und anzeigen
-        if (email && studentData[email] !== undefined) {
-            const student = studentData[email];
-            const stage = student.progress;
-            const progressPercentage = (stage <= 4 ? (stage + 1) * 20 : 100);
-
-            // Lade die Progress-Bar mit Animation
-            setTimeout(() => {
-                progressBar.style.width = `${progressPercentage}%`;
-            }, 500);
-
-            // Admin-Status anzeigen
-            if (stage === 5) {
-                studentInfo.innerHTML = `Schüler: <span>${email} (Admin)</span>`;
-            }
-        } else {
-            // Fehlermeldung bei fehlenden Daten
-            studentInfo.textContent = "Fehler: Schülerdaten konnten nicht geladen werden.";
-            progressText.textContent = "E-Mail-Adresse nicht gefunden.";
-            edekaCard.textContent = "Edeka-Ausweis: unbekannt";
-        }
-    </script>
 </body>
 </html>
