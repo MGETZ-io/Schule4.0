@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steps of Trust</title>
-    <link rel="icon" type="image/png" href="IMG_0210.PNG
-">
+    <link rel="icon" type="image/png" href="IMG_0210.PNG">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -94,6 +93,11 @@
             background: #005bb5;
         }
 
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
         footer {
             margin-top: 20px;
             padding: 10px;
@@ -144,7 +148,8 @@
         <button onclick="window.location.href='https://borys.webuntis.com/WebUntis/?school=Freiherr-vom-Stein+Neum%C3%BCnster#/basic/login';">Untis</button>
         <button onclick="window.location.href='https://steinschule.lernlog.digital';">Lernlog</button>
         <button onclick="window.location.href='https://sh.itslearning.com/index.aspx';">Itslearning</button>
-        <button onclick="window.location.href='kl.html';">Zur Klassenliste</button>
+        <!-- Der Button "Zur Klassenliste" wird nur für Lehrer sichtbar sein -->
+        <button id="classListButton" onclick="window.location.href='kl.html';" disabled>Zur Klassenliste</button>
     </div>
     <footer>
         <img src="Bild1.jpeg" alt="Logo 1">
@@ -192,6 +197,7 @@
         const studentInfo = document.getElementById("student-info");
         const progressText = document.getElementById("progress-text");
         const edekaCard = document.getElementById("edeka-card");
+        const classListButton = document.getElementById("classListButton");
 
         // Daten überprüfen und anzeigen
         if (email && studentData[email] !== undefined) {
@@ -211,6 +217,8 @@
             // Admin-Status anzeigen
             if (stage === 5) {
                 studentInfo.innerHTML = `Schüler: <span>${email} (Admin)</span>`;
+                // Der Button "Zur Klassenliste" wird nur für Admins/Lehrer aktiviert
+                classListButton.disabled = false;
             }
         } else {
             // Fehlermeldung bei fehlenden Daten
