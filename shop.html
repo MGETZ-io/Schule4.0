@@ -15,10 +15,12 @@
             justify-content: center;
             min-height: 100vh;
             background: linear-gradient(to right, #ffecd2, #fcb69f);
+            transition: background 0.6s ease-in-out;
         }
         h1 {
             color: #333;
             text-align: center;
+            margin-bottom: 1rem;
         }
         .radio-container {
             --main-color: #f7e479;
@@ -39,38 +41,15 @@
             left: 0;
             top: 0;
             bottom: 0;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(27, 27, 27, 1) 50%, rgba(0, 0, 0, 0) 100%);
             width: 1px;
         }
         .radio-container .glider-container .glider {
-            position: relative;
             height: calc(100% / var(--total-radio));
-            width: 100%;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, var(--main-color) 50%, rgba(0, 0, 0, 0) 100%);
             transition: transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56);
-        }
-        .radio-container .glider-container .glider::before {
-            content: "";
-            position: absolute;
-            height: 60%;
-            width: 300%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--main-color);
-            filter: blur(10px);
-        }
-        .radio-container .glider-container .glider::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            height: 100%;
-            width: 150px;
-            background: linear-gradient(90deg, var(--main-color-opacity) 0%, rgba(0, 0, 0, 0) 100%);
         }
         .radio-container label {
             cursor: pointer;
             padding: 1rem;
-            position: relative;
             color: grey;
             transition: all 0.3s ease-in-out;
         }
@@ -86,34 +65,29 @@
         .radio-container input:nth-of-type(3):checked ~ .glider-container .glider {
             transform: translateY(200%);
         }
+        .perks-container {
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+        .perk {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
         .shop-container {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: none;
         }
         .membership-card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            text-align: center;
-            width: 250px;
-        }
-        .membership-card h2 {
-            margin-bottom: 0.5rem;
-        }
-        .membership-card p {
-            margin-bottom: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
         }
         .buy-button {
             background-color: #ff7f50;
             color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
         }
         .buy-button:hover {
             background-color: #ff6347;
@@ -123,33 +97,59 @@
 <body>
     <h1>Wählen Sie Ihre Mitgliedschaft</h1>
     <div class="radio-container">
-        <input checked="" id="radio-free" name="radio" type="radio" />
+        <input checked id="radio-free" name="radio" type="radio" onclick="updateDisplay('free')" />
         <label for="radio-free">Free</label>
-        <input id="radio-basic" name="radio" type="radio" />
+        <input id="radio-basic" name="radio" type="radio" onclick="updateDisplay('basic')" />
         <label for="radio-basic">Basic</label>
-        <input id="radio-premium" name="radio" type="radio" />
+        <input id="radio-premium" name="radio" type="radio" onclick="updateDisplay('premium')" />
         <label for="radio-premium">Premium</label>
         <div class="glider-container">
             <div class="glider"></div>
         </div>
     </div>
 
-    <div class="shop-container">
-        <div class="membership-card">
+    <div class="perks-container" id="perks">
+        <div class="membership-card" id="free-perks">
             <h2>Free</h2>
-            <p>Kostenlose Basis-Mitgliedschaft.</p>
-            <button class="buy-button">Kostenlos registrieren</button>
+            <p class="perk">Zugang zu Basisfunktionen</p>
+            <p class="perk">Keine Kosten</p>
+            <button class="buy-button">Jetzt loslegen</button>
         </div>
-        <div class="membership-card">
+        <div class="membership-card" id="basic-perks">
             <h2>Basic</h2>
-            <p>Zugang zu zusätzlichen Funktionen.</p>
-            <button class="buy-button">Jetzt kaufen – 5,99€/Monat</button>
+            <p class="perk">Zusätzliche Features</p>
+            <p class="perk">Preis: 5,99 € / Monat</p>
+            <button class="buy-button">Jetzt kaufen</button>
         </div>
-        <div class="membership-card">
+        <div class="membership-card" id="premium-perks">
             <h2>Premium</h2>
-            <p>Alle Funktionen und exklusiver Support.</p>
-            <button class="buy-button">Jetzt kaufen – 12,99€/Monat</button>
+            <p class="perk">Alle Features & Premium-Support</p>
+            <p class="perk">Preis: 12,99 € / Monat</p>
+            <button class="buy-button">Jetzt kaufen</button>
         </div>
     </div>
+
+    <script>
+        function updateDisplay(plan) {
+            const body = document.body;
+            const perks = document.getElementById('perks');
+            const free = document.getElementById('free-perks');
+            const basic = document.getElementById('basic-perks');
+            const premium = document.getElementById('premium-perks');
+
+            perks.style.opacity = '1';
+            free.style.display = plan === 'free' ? 'block' : 'none';
+            basic.style.display = plan === 'basic' ? 'block' : 'none';
+            premium.style.display = plan === 'premium' ? 'block' : 'none';
+
+            if (plan === 'free') {
+                body.style.background = 'linear-gradient(to right, #a1ffce, #faffd1)';
+            } else if (plan === 'basic') {
+                body.style.background = 'linear-gradient(to right, #ffe4e1, #ff7f50)';
+            } else {
+                body.style.background = 'linear-gradient(to right, #141e30, #243b55)';
+            }
+        }
+    </script>
 </body>
 </html>
