@@ -10,19 +10,19 @@
             background: linear-gradient(to bottom, #008c95, #00b3c4);
             color: #fff;
             text-align: center;
-            margin: 0;
             padding: 20px;
+            margin: 0;
         }
 
         h1 {
             font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
         }
 
         select, .student-list {
             margin: 10px;
             padding: 10px;
-            font-size: 1.2em;
+            font-size: 1em;
             background: #fff;
             color: #000;
             border: none;
@@ -32,41 +32,59 @@
 
         .student-list {
             display: none;
+            margin-top: 20px;
+            font-size: 1.2em;
         }
 
-        .student-card {
-            background: rgba(255, 255, 255, 0.9);
-            color: black;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 10px;
+        .attendance-calendar {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);  /* 7 Tage pro Woche */
+            gap: 10px;
+            justify-items: center;
             text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .attendance-button {
-            padding: 10px 15px;
-            font-size: 1em;
-            border: none;
+        .attendance-day {
+            width: 80px;
+            height: 50px;
+            background: #fff;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
         }
 
-        .present {
+        .attendance-day.present {
             background-color: #4CAF50;
             color: white;
         }
 
-        .absent {
+        .attendance-day.absent {
             background-color: #f44336;
             color: white;
+        }
+
+        .attendance-day.excused {
+            background-color: #FFD700;
+            color: black;
+        }
+
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #00676c;
+            width: 100%;
+            color: #fff;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
-    <h1>Wähle deine Klasse</h1>
+    <h1>Bitte Wähle deine Klasse</h1>
 
     <select id="class-select">
         <option value="">-- Bitte wähle eine Klasse --</option>
@@ -74,83 +92,100 @@
         <option value="Ub">Ub</option>
         <option value="Uc">Uc</option>
         <option value="Ud">Ud</option>
+        <option value="Ue">Ue</option>
+        <option value="Uf">Uf</option>
+        <option value="Ug">Ug</option>
+        <option value="Uh">Uh</option>
+        <option value="Ui">Ui</option>
+        <option value="Uj">Uj</option>
+        <option value="Ma">Ma</option>
+        <option value="Mb">Mb</option>
+        <option value="Mc">Mc</option>
+        <option value="Md">Md</option>
         <option value="Me">Me</option>
     </select>
 
     <div id="students" class="student-list">
-        <h2>Schüler & Anwesenheit</h2>
-        <div id="student-list"></div>
+        <h2>Schüler:</h2>
+        <ul id="student-list">
+            <!-- Schüler werden hier dynamisch hinzugefügt -->
+        </ul>
+
+        <div id="attendance-calendar-container">
+            <h3>Kalenderansicht der Anwesenheit</h3>
+            <div id="attendance-calendar" class="attendance-calendar">
+                <!-- Kalender wird hier generiert -->
+            </div>
+        </div>
     </div>
 
     <script>
-        // Schüler mit zugehörigen Steps
         const classStudents = {
-            'Ua': [{ name: 'Lukas K.', step: 'Step 1' }, { name: 'Emma S.', step: 'Step 2' }],
-            'Ub': [{ name: 'Hannah B.', step: 'Step 3' }, { name: 'Tim W.', step: 'Step 4' }],
-            'Uc': [{ name: 'Sophia M.', step: 'Step 5' }, { name: 'Paul G.', step: 'Step 6' }],
-            'Ud': [{ name: 'Laura F.', step: 'Step 7' }, { name: 'Tom H.', step: 'Step 8' }],
-            'Me': [
-                { name: 'Maxim G.', step: 'Step 9' },
-                { name: 'Luca S.', step: 'Step 10' },
-                { name: 'Shawn O.', step: 'Step 11' }
-            ]
+            'Ua': ['Schüler 1', 'Schüler 2', 'Schüler 3'],
+            'Ub': ['Schüler 4', 'Schüler 5', 'Schüler 6'],
+            'Uc': ['Schüler 7', 'Schüler 8', 'Schüler 9'],
+            'Me': ['Maxim G.', 'Luca S.', 'Shawn O.', 'Paul S.', 'Niklas S.', 'Ben L.']
         };
 
-        // Speichert die Anwesenheit pro Schüler
-        const attendanceData = {};
+        // Funktion zum Erstellen des Kalenders
+        function createCalendar(selectedClass) {
+            const calendarContainer = document.getElementById('attendance-calendar');
+            calendarContainer.innerHTML = ''; 
 
-        // Funktion zum Erstellen der Schülerliste
-        function createStudentList(selectedClass) {
-            const studentContainer = document.getElementById('student-list');
-            studentContainer.innerHTML = '';
+            const daysOfWeek = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            const students = classStudents[selectedClass];
 
-            classStudents[selectedClass].forEach(student => {
-                const studentCard = document.createElement('div');
-                studentCard.classList.add('student-card');
-
-                const nameElement = document.createElement('span');
-                nameElement.textContent = `${student.name} - ${student.step}`;
-
-                const attendanceButton = document.createElement('button');
-                attendanceButton.textContent = 'Anwesend';
-                attendanceButton.classList.add('attendance-button', 'absent');
-
-                attendanceButton.addEventListener('click', () => {
-                    toggleAttendance(attendanceButton, student.name);
-                });
-
-                studentCard.appendChild(nameElement);
-                studentCard.appendChild(attendanceButton);
-                studentContainer.appendChild(studentCard);
+            // Kopfzeile mit Wochentagen
+            daysOfWeek.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('attendance-day');
+                dayElement.textContent = day;
+                calendarContainer.appendChild(dayElement);
             });
 
-            document.getElementById('students').style.display = 'block';
+            // Anwesenheitszellen pro Schüler
+            students.forEach(student => {
+                daysOfWeek.forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('attendance-day');
+                    dayElement.dataset.student = student;
+                    dayElement.dataset.day = day;
+
+                    // Klick-Event für Statuswechsel
+                    dayElement.addEventListener('click', function() {
+                        toggleAttendance(dayElement);
+                    });
+
+                    calendarContainer.appendChild(dayElement);
+                });
+            });
         }
 
-        // Funktion zum Umschalten der Anwesenheit
-        function toggleAttendance(button, studentName) {
-            if (!attendanceData[studentName]) {
-                attendanceData[studentName] = 'absent';
-            }
-
-            if (attendanceData[studentName] === 'present') {
-                attendanceData[studentName] = 'absent';
-                button.classList.remove('present');
-                button.classList.add('absent');
-                button.textContent = 'Fehlend';
+        // Funktion zum Wechseln des Anwesenheitsstatus
+        function toggleAttendance(dayElement) {
+            if (dayElement.classList.contains('present')) {
+                dayElement.classList.remove('present');
+                dayElement.classList.add('absent');
+                dayElement.textContent = "X";
+            } else if (dayElement.classList.contains('absent')) {
+                dayElement.classList.remove('absent');
+                dayElement.classList.add('excused');
+                dayElement.textContent = "E";
+            } else if (dayElement.classList.contains('excused')) {
+                dayElement.classList.remove('excused');
+                dayElement.textContent = "";
             } else {
-                attendanceData[studentName] = 'present';
-                button.classList.remove('absent');
-                button.classList.add('present');
-                button.textContent = 'Anwesend';
+                dayElement.classList.add('present');
+                dayElement.textContent = "✓";
             }
         }
 
         // Event Listener für Klassenauswahl
-        document.getElementById('class-select').addEventListener('change', function () {
+        document.getElementById('class-select').addEventListener('change', function() {
             const selectedClass = this.value;
             if (selectedClass && classStudents[selectedClass]) {
-                createStudentList(selectedClass);
+                document.getElementById('students').style.display = 'block';
+                createCalendar(selectedClass);
             } else {
                 document.getElementById('students').style.display = 'none';
             }
