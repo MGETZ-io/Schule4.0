@@ -3,233 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klassenliste</title>
-    <link rel="icon" type="image/png" href="IMG_0210.PNG">
+    <title>Klassenliste - Anwesenheit</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #1e3c72, #2a5298);
+            background: linear-gradient(to bottom, #008c95, #00b3c4);
             color: #fff;
             text-align: center;
-            padding: 20px;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            padding: 20px;
         }
 
         h1 {
             font-size: 2.5em;
-            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        select {
+        select, .student-list {
+            margin: 10px;
             padding: 10px;
-            font-size: 1em;
+            font-size: 1.2em;
             background: #fff;
             color: #000;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        select:hover {
-            background: #f4f4f4;
         }
 
         .student-list {
             display: none;
-            margin-top: 20px;
+        }
+
+        .student-card {
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
+            margin: 10px;
             border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.5s ease;
-        }
-
-        .student-list h2 {
-            margin-bottom: 10px;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
-            padding: 10px;
-            margin: 5px 0;
-            background: #fff;
-            color: #000;
-            border-radius: 5px;
+            text-align: center;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s ease;
         }
 
-        li:hover {
-            background: #f4f4f4;
-        }
-
-        .status {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .status.present {
-            background: #4CAF50;
-        }
-
-        .status.absent {
-            background: #f44336;
-        }
-
-        .attendance-calendar {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            justify-items: center;
-        }
-
-        .attendance-day {
-            width: 50px;
-            height: 50px;
-            background: #fff;
-            color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .attendance-button {
+            padding: 10px 15px;
+            font-size: 1em;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .attendance-day.present {
+        .present {
             background-color: #4CAF50;
             color: white;
         }
 
-        .attendance-day.absent {
+        .absent {
             background-color: #f44336;
             color: white;
-        }
-
-        footer {
-            margin-top: 20px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            width: 100%;
-            color: #fff;
-            font-size: 0.9em;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
     </style>
 </head>
 <body>
-    <h1>📚 Wähle deine Klasse</h1>
+    <h1>Wähle deine Klasse</h1>
 
     <select id="class-select">
-        <option value="">-- Bitte wählen --</option>
+        <option value="">-- Bitte wähle eine Klasse --</option>
+        <option value="Ua">Ua</option>
+        <option value="Ub">Ub</option>
+        <option value="Uc">Uc</option>
+        <option value="Ud">Ud</option>
         <option value="Me">Me</option>
-        <option value="Mf">Mf</option>
-        <option value="Mg">Mg</option>
     </select>
 
     <div id="students" class="student-list">
-        <h2>👥 Schülerliste:</h2>
-        <ul id="student-list"></ul>
-        <h3>📅 Anwesenheitsübersicht</h3>
-        <div id="attendance-calendar" class="attendance-calendar"></div>
+        <h2>Schüler & Anwesenheit</h2>
+        <div id="student-list"></div>
     </div>
 
-    <footer>📌 Entwickelt für die <span>FVSS</span></footer>
-
     <script>
+        // Schüler mit zugehörigen Steps
         const classStudents = {
-            'Me': ['Maxim G.', 'Luca S.', 'Shawn O.', 'Paul S.', 'Niklas S.', 'Ben L.'],
-            'Mf': ['Julia K.', 'Leon M.', 'Sarah W.', 'Tim A.', 'Felix B.'],
-            'Mg': ['Hanna T.', 'Tom E.', 'Mia R.', 'Kevin F.', 'Anna C.']
+            'Ua': [{ name: 'Lukas K.', step: 'Step 1' }, { name: 'Emma S.', step: 'Step 2' }],
+            'Ub': [{ name: 'Hannah B.', step: 'Step 3' }, { name: 'Tim W.', step: 'Step 4' }],
+            'Uc': [{ name: 'Sophia M.', step: 'Step 5' }, { name: 'Paul G.', step: 'Step 6' }],
+            'Ud': [{ name: 'Laura F.', step: 'Step 7' }, { name: 'Tom H.', step: 'Step 8' }],
+            'Me': [
+                { name: 'Maxim G.', step: 'Step 9' },
+                { name: 'Luca S.', step: 'Step 10' },
+                { name: 'Shawn O.', step: 'Step 11' }
+            ]
         };
 
+        // Speichert die Anwesenheit pro Schüler
         const attendanceData = {};
 
+        // Funktion zum Erstellen der Schülerliste
         function createStudentList(selectedClass) {
-            const studentList = document.getElementById('student-list');
-            studentList.innerHTML = '';
+            const studentContainer = document.getElementById('student-list');
+            studentContainer.innerHTML = '';
 
             classStudents[selectedClass].forEach(student => {
-                const li = document.createElement('li');
-                li.textContent = student;
+                const studentCard = document.createElement('div');
+                studentCard.classList.add('student-card');
 
-                const statusDot = document.createElement('div');
-                statusDot.classList.add('status');
-                statusDot.dataset.student = student;
+                const nameElement = document.createElement('span');
+                nameElement.textContent = `${student.name} - ${student.step}`;
 
-                statusDot.addEventListener('click', function() {
-                    toggleAttendanceStatus(this);
+                const attendanceButton = document.createElement('button');
+                attendanceButton.textContent = 'Anwesend';
+                attendanceButton.classList.add('attendance-button', 'absent');
+
+                attendanceButton.addEventListener('click', () => {
+                    toggleAttendance(attendanceButton, student.name);
                 });
 
-                li.appendChild(statusDot);
-                studentList.appendChild(li);
+                studentCard.appendChild(nameElement);
+                studentCard.appendChild(attendanceButton);
+                studentContainer.appendChild(studentCard);
             });
 
-            createCalendar(selectedClass);
+            document.getElementById('students').style.display = 'block';
         }
 
-        function createCalendar(selectedClass) {
-            const calendarContainer = document.getElementById('attendance-calendar');
-            calendarContainer.innerHTML = '';
+        // Funktion zum Umschalten der Anwesenheit
+        function toggleAttendance(button, studentName) {
+            if (!attendanceData[studentName]) {
+                attendanceData[studentName] = 'absent';
+            }
 
-            const daysOfWeek = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-
-            daysOfWeek.forEach(day => {
-                const dayElement = document.createElement('div');
-                dayElement.classList.add('attendance-day');
-                dayElement.textContent = day;
-
-                dayElement.addEventListener('click', function() {
-                    toggleAttendanceCalendar(this);
-                });
-
-                calendarContainer.appendChild(dayElement);
-            });
-        }
-
-        function toggleAttendanceStatus(element) {
-            if (element.classList.contains('present')) {
-                element.classList.remove('present');
-                element.classList.add('absent');
+            if (attendanceData[studentName] === 'present') {
+                attendanceData[studentName] = 'absent';
+                button.classList.remove('present');
+                button.classList.add('absent');
+                button.textContent = 'Fehlend';
             } else {
-                element.classList.remove('absent');
-                element.classList.add('present');
+                attendanceData[studentName] = 'present';
+                button.classList.remove('absent');
+                button.classList.add('present');
+                button.textContent = 'Anwesend';
             }
         }
 
-        function toggleAttendanceCalendar(element) {
-            if (element.classList.contains('present')) {
-                element.classList.remove('present');
-                element.classList.add('absent');
-            } else {
-                element.classList.remove('absent');
-                element.classList.add('present');
-            }
-        }
-
-        document.getElementById('class-select').addEventListener('change', function() {
+        // Event Listener für Klassenauswahl
+        document.getElementById('class-select').addEventListener('change', function () {
             const selectedClass = this.value;
             if (selectedClass && classStudents[selectedClass]) {
-                document.getElementById('students').style.display = 'block';
                 createStudentList(selectedClass);
             } else {
                 document.getElementById('students').style.display = 'none';
