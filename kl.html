@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klassenliste - Kalenderansicht</title>
+    <title>Klassenliste</title>
     <link rel="icon" type="image/png" href="IMG_0210.PNG">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #008c95, #00b3c4);
+            background: linear-gradient(to right, #1e3c72, #2a5298);
             color: #fff;
             text-align: center;
             padding: 20px;
             margin: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         h1 {
@@ -26,8 +25,7 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        select, .student-list {
-            margin: 10px;
+        select {
             padding: 10px;
             font-size: 1em;
             background: #fff;
@@ -35,21 +33,71 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            background: #f4f4f4;
         }
 
         .student-list {
             display: none;
             margin-top: 20px;
-            font-size: 1.2em;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .student-list h2 {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #fff;
+            color: #000;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        li:hover {
+            background: #f4f4f4;
+        }
+
+        .status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .status.present {
+            background: #4CAF50;
+        }
+
+        .status.absent {
+            background: #f44336;
         }
 
         .attendance-calendar {
             margin-top: 20px;
             display: grid;
-            grid-template-columns: repeat(7, 1fr);  /* 7 Tage pro Woche */
+            grid-template-columns: repeat(7, 1fr);
             gap: 10px;
             justify-items: center;
-            text-align: center;
         }
 
         .attendance-day {
@@ -62,6 +110,7 @@
             align-items: center;
             border-radius: 5px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .attendance-day.present {
@@ -74,197 +123,114 @@
             color: white;
         }
 
-        .attendance-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .attendance-buttons button {
-            padding: 5px 10px;
-            font-size: 1em;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .attendance-buttons button:disabled {
-            background-color: #ddd;
-            cursor: not-allowed;
-        }
-
         footer {
             margin-top: 20px;
             padding: 10px;
-            background: #00676c;
+            background: rgba(0, 0, 0, 0.5);
             width: 100%;
             color: #fff;
             font-size: 0.9em;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-        }
-
-        footer img {
-            height: 40px;
-            width: auto;
-        }
-
-        footer a {
-            color: #ffd700;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Bitte Wähle deine Klasse</h1>
+    <h1>📚 Wähle deine Klasse</h1>
 
     <select id="class-select">
-        <option value="">-- Bitte wähle eine Klasse --</option>
-        <option value="Ua">Ua</option>
-        <option value="Ub">Ub</option>
-        <option value="Uc">Uc</option>
-        <option value="Ud">Ud</option>
-        <option value="Ue">Ue</option>
-        <option value="Uf">Uf</option>
-        <option value="Ug">Ug</option>
-        <option value="Uh">Uh</option>
-        <option value="Ui">Ui</option>
-        <option value="Uj">Uj</option>
-        <option value="Ma">Ma</option>
-        <option value="Mb">Mb</option>
-        <option value="Mc">Mc</option>
-        <option value="Md">Md</option>
+        <option value="">-- Bitte wählen --</option>
         <option value="Me">Me</option>
         <option value="Mf">Mf</option>
         <option value="Mg">Mg</option>
-        <option value="Mh">Mh</option>
-        <option value="Mi">Mi</option>
-        <option value="Mk">Mk</option>
     </select>
 
     <div id="students" class="student-list">
-        <h2>Schüler:</h2>
-        <ul id="student-list">
-            <!-- Schüler werden hier dynamisch hinzugefügt -->
-        </ul>
-
-        <div id="attendance-calendar-container">
-            <h3>Kalenderansicht der Anwesenheit</h3>
-            <div id="attendance-calendar" class="attendance-calendar">
-                <!-- Kalenderansicht wird hier dynamisch hinzugefügt -->
-            </div>
-        </div>
+        <h2>👥 Schülerliste:</h2>
+        <ul id="student-list"></ul>
+        <h3>📅 Anwesenheitsübersicht</h3>
+        <div id="attendance-calendar" class="attendance-calendar"></div>
     </div>
 
-    <div class="button-container">
-        <button onclick="window.location.href='index.html';">Zurück zum Step</button>
-    </div>
-
-    <footer>
-        <img src="Bild1.jpeg" alt="Logo 1">
-        <img src="R.png" alt="Logo 2">
-        <img src="IMG_0210.PNG" alt="Logo 3">
-        <p>Entwickelt für die <span>FVSS</span>. <a href="impressum">Impressum</a></p>
-    </footer>
+    <footer>📌 Entwickelt für die <span>FVSS</span></footer>
 
     <script>
         const classStudents = {
-            'Ua': ['1', '2', '3', '4', '5'],
-            'Ub': ['6', '7', '8', '9', '10'],
-            'Uc': ['11', '12', '13', '14', '15'],
-            'Ud': ['16', '17', '18', '19', '20'],
-            'Ue': ['21', '22', '23', '24', '25'],
-            'Uf': ['26', '27', '28', '29', '30'],
-            'Ug': ['31', '32', '33', '34', '35'],
-            'Uh': ['36', '37', '38', '39', '40'],
-            'Ui': ['41', '42', '43', '44', '45'],
-            'Uj': ['46', '47', '48', '49', '50'],
-            'Ma': ['51', '52', '53', '54', '55'],
-            'Mb': ['56', '57', '58', '59', '60'],
-            'Mc': ['61', '62', '63', '64', '65'],
-            'Md': ['66', '67', '68', '69', '70'],
-            'Me': ['Maxim G.', 'Luca S.', 'Shawn O.', 'Paul S.', 'Niklas S.','Ben L.'],
-            'Mf': ['76', '77', '78', '79', '80'],
-            'Mg': ['81', '82', '83', '84', '85'],
-            'Mh': ['86', '87', '88', '89', '90'],
-            'Mi': ['91', '92', '93', '94', '95'],
-            'Mk': ['96', '97', '98', '99', '100']
+            'Me': ['Maxim G.', 'Luca S.', 'Shawn O.', 'Paul S.', 'Niklas S.', 'Ben L.'],
+            'Mf': ['Julia K.', 'Leon M.', 'Sarah W.', 'Tim A.', 'Felix B.'],
+            'Mg': ['Hanna T.', 'Tom E.', 'Mia R.', 'Kevin F.', 'Anna C.']
         };
 
-        // Anwesenheitsdaten für Schüler, initial leer
         const attendanceData = {};
 
-        // Funktion zum Erstellen der Kalenderansicht
+        function createStudentList(selectedClass) {
+            const studentList = document.getElementById('student-list');
+            studentList.innerHTML = '';
+
+            classStudents[selectedClass].forEach(student => {
+                const li = document.createElement('li');
+                li.textContent = student;
+
+                const statusDot = document.createElement('div');
+                statusDot.classList.add('status');
+                statusDot.dataset.student = student;
+
+                statusDot.addEventListener('click', function() {
+                    toggleAttendanceStatus(this);
+                });
+
+                li.appendChild(statusDot);
+                studentList.appendChild(li);
+            });
+
+            createCalendar(selectedClass);
+        }
+
         function createCalendar(selectedClass) {
             const calendarContainer = document.getElementById('attendance-calendar');
-            calendarContainer.innerHTML = ''; // Clear any previous calendar
+            calendarContainer.innerHTML = '';
 
             const daysOfWeek = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-            const students = classStudents[selectedClass];
-            let dayCounter = 1;
 
-            // Add week days
             daysOfWeek.forEach(day => {
                 const dayElement = document.createElement('div');
                 dayElement.classList.add('attendance-day');
                 dayElement.textContent = day;
+
+                dayElement.addEventListener('click', function() {
+                    toggleAttendanceCalendar(this);
+                });
+
                 calendarContainer.appendChild(dayElement);
             });
-
-            // Add student attendance for each day
-            students.forEach(student => {
-                daysOfWeek.forEach(day => {
-                    const dayElement = document.createElement('div');
-                    dayElement.classList.add('attendance-day');
-                    dayElement.textContent = student;
-
-                    // Button for marking presence
-                    dayElement.addEventListener('click', function() {
-                        toggleAttendance(dayElement, student, day);
-                    });
-
-                    calendarContainer.appendChild(dayElement);
-                });
-            });
         }
 
-        // Toggle attendance status
-        function toggleAttendance(dayElement, student, day) {
-            const currentStatus = dayElement.classList.contains('present') ? 'present' : 'absent';
-            if (currentStatus === 'present') {
-                dayElement.classList.remove('present');
-                dayElement.classList.add('absent');
-                updateAttendanceData(student, day, 'absent');
+        function toggleAttendanceStatus(element) {
+            if (element.classList.contains('present')) {
+                element.classList.remove('present');
+                element.classList.add('absent');
             } else {
-                dayElement.classList.remove('absent');
-                dayElement.classList.add('present');
-                updateAttendanceData(student, day, 'present');
+                element.classList.remove('absent');
+                element.classList.add('present');
             }
         }
 
-        // Update attendance data
-        function updateAttendanceData(student, day, status) {
-            if (!attendanceData[student]) {
-                attendanceData[student] = {};
+        function toggleAttendanceCalendar(element) {
+            if (element.classList.contains('present')) {
+                element.classList.remove('present');
+                element.classList.add('absent');
+            } else {
+                element.classList.remove('absent');
+                element.classList.add('present');
             }
-            attendanceData[student][day] = status;
         }
 
-        // Event listener for class selection
         document.getElementById('class-select').addEventListener('change', function() {
             const selectedClass = this.value;
             if (selectedClass && classStudents[selectedClass]) {
                 document.getElementById('students').style.display = 'block';
-                createCalendar(selectedClass);
+                createStudentList(selectedClass);
             } else {
                 document.getElementById('students').style.display = 'none';
             }
