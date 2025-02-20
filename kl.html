@@ -36,18 +36,21 @@
             font-size: 1.2em;
         }
 
-        .attendance-calendar {
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);  /* 7 Tage pro Woche */
-            gap: 10px;
-            justify-items: center;
+        }
+
+        .attendance-table th, .attendance-table td {
+            border: 1px solid #fff;
+            padding: 10px;
             text-align: center;
         }
 
-        .attendance-day {
-            width: 80px;
-            height: 50px;
+        .attendance-status {
+            width: 120px;
+            height: 40px;
             background: #fff;
             color: #000;
             display: flex;
@@ -58,19 +61,29 @@
             font-weight: bold;
         }
 
-        .attendance-day.present {
-            background-color: #4CAF50;
+        .present {
+            background-color: #4CAF50 !important;
             color: white;
         }
 
-        .attendance-day.absent {
-            background-color: #f44336;
+        .absent {
+            background-color: #f44336 !important;
             color: white;
         }
 
-        .attendance-day.excused {
-            background-color: #FFD700;
+        .excused {
+            background-color: #FFD700 !important;
             color: black;
+        }
+
+        .late {
+            background-color: #1E90FF !important;
+            color: white;
+        }
+
+        .late-dropdown {
+            display: none;
+            margin-top: 5px;
         }
 
         footer {
@@ -91,32 +104,26 @@
         <option value="Ua">Ua</option>
         <option value="Ub">Ub</option>
         <option value="Uc">Uc</option>
-        <option value="Ud">Ud</option>
-        <option value="Ue">Ue</option>
-        <option value="Uf">Uf</option>
-        <option value="Ug">Ug</option>
-        <option value="Uh">Uh</option>
-        <option value="Ui">Ui</option>
-        <option value="Uj">Uj</option>
-        <option value="Ma">Ma</option>
-        <option value="Mb">Mb</option>
-        <option value="Mc">Mc</option>
-        <option value="Md">Md</option>
         <option value="Me">Me</option>
     </select>
 
     <div id="students" class="student-list">
         <h2>Schüler:</h2>
-        <ul id="student-list">
-            <!-- Schüler werden hier dynamisch hinzugefügt -->
-        </ul>
-
-        <div id="attendance-calendar-container">
-            <h3>Kalenderansicht der Anwesenheit</h3>
-            <div id="attendance-calendar" class="attendance-calendar">
-                <!-- Kalender wird hier generiert -->
-            </div>
-        </div>
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Schüler</th>
+                    <th>Mo</th>
+                    <th>Di</th>
+                    <th>Mi</th>
+                    <th>Do</th>
+                    <th>Fr</th>
+                </tr>
+            </thead>
+            <tbody id="attendance-body">
+                <!-- Schüler werden hier dynamisch eingefügt -->
+            </tbody>
+        </table>
     </div>
 
     <script>
@@ -127,56 +134,75 @@
             'Me': ['Maxim G.', 'Luca S.', 'Shawn O.', 'Paul S.', 'Niklas S.', 'Ben L.']
         };
 
-        // Funktion zum Erstellen des Kalenders
-        function createCalendar(selectedClass) {
-            const calendarContainer = document.getElementById('attendance-calendar');
-            calendarContainer.innerHTML = ''; 
+        // Funktion zum Erstellen der Anwesenheitstabelle
+        function createAttendanceTable(selectedClass) {
+            const attendanceBody = document.getElementById('attendance-body');
+            attendanceBody.innerHTML = ''; // Leeren
 
-            const daysOfWeek = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            const daysOfWeek = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
             const students = classStudents[selectedClass];
 
-            // Kopfzeile mit Wochentagen
-            daysOfWeek.forEach(day => {
-                const dayElement = document.createElement('div');
-                dayElement.classList.add('attendance-day');
-                dayElement.textContent = day;
-                calendarContainer.appendChild(dayElement);
-            });
-
-            // Anwesenheitszellen pro Schüler
             students.forEach(student => {
-                daysOfWeek.forEach(day => {
-                    const dayElement = document.createElement('div');
-                    dayElement.classList.add('attendance-day');
-                    dayElement.dataset.student = student;
-                    dayElement.dataset.day = day;
+                const row = document.createElement('tr');
 
-                    // Klick-Event für Statuswechsel
-                    dayElement.addEventListener('click', function() {
-                        toggleAttendance(dayElement);
+                const nameCell = document.createElement('td');
+                nameCell.textContent = student;
+                row.appendChild(nameCell);
+
+                daysOfWeek.forEach(day => {
+                    const statusCell = document.createElement('td');
+                    const statusDiv = document.createElement('div');
+                    statusDiv.classList.add('attendance-status');
+                    statusDiv.dataset.student = student;
+                    statusDiv.dataset.day = day;
+                    statusDiv.addEventListener('click', () => toggleAttendance(statusDiv));
+
+                    const lateDropdown = document.createElement('select');
+                    lateDropdown.classList.add('late-dropdown');
+                    lateDropdown.innerHTML = `
+                        <option value="5">5 Min.</option>
+                        <option value="10">10 Min.</option>
+                        <option value="15">15 Min.</option>
+                        <option value="20">20 Min.</option>
+                        <option value="30">30 Min.</option>
+                    `;
+                    lateDropdown.addEventListener('change', (event) => {
+                        statusDiv.textContent = `⏳ ${event.target.value} Min.`;
                     });
 
-                    calendarContainer.appendChild(dayElement);
+                    statusCell.appendChild(statusDiv);
+                    statusCell.appendChild(lateDropdown);
+                    row.appendChild(statusCell);
                 });
+
+                attendanceBody.appendChild(row);
             });
         }
 
         // Funktion zum Wechseln des Anwesenheitsstatus
-        function toggleAttendance(dayElement) {
-            if (dayElement.classList.contains('present')) {
-                dayElement.classList.remove('present');
-                dayElement.classList.add('absent');
-                dayElement.textContent = "X";
-            } else if (dayElement.classList.contains('absent')) {
-                dayElement.classList.remove('absent');
-                dayElement.classList.add('excused');
-                dayElement.textContent = "E";
-            } else if (dayElement.classList.contains('excused')) {
-                dayElement.classList.remove('excused');
-                dayElement.textContent = "";
+        function toggleAttendance(statusDiv) {
+            const lateDropdown = statusDiv.nextElementSibling;
+
+            if (statusDiv.classList.contains('present')) {
+                statusDiv.classList.remove('present');
+                statusDiv.classList.add('absent');
+                statusDiv.textContent = "X";
+            } else if (statusDiv.classList.contains('absent')) {
+                statusDiv.classList.remove('absent');
+                statusDiv.classList.add('excused');
+                statusDiv.textContent = "E";
+            } else if (statusDiv.classList.contains('excused')) {
+                statusDiv.classList.remove('excused');
+                statusDiv.classList.add('late');
+                statusDiv.textContent = "⏳";
+                lateDropdown.style.display = 'block';
+            } else if (statusDiv.classList.contains('late')) {
+                statusDiv.classList.remove('late');
+                statusDiv.textContent = "";
+                lateDropdown.style.display = 'none';
             } else {
-                dayElement.classList.add('present');
-                dayElement.textContent = "✓";
+                statusDiv.classList.add('present');
+                statusDiv.textContent = "✓";
             }
         }
 
@@ -185,7 +211,7 @@
             const selectedClass = this.value;
             if (selectedClass && classStudents[selectedClass]) {
                 document.getElementById('students').style.display = 'block';
-                createCalendar(selectedClass);
+                createAttendanceTable(selectedClass);
             } else {
                 document.getElementById('students').style.display = 'none';
             }
